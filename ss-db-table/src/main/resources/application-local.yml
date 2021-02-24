@@ -1,0 +1,115 @@
+
+spring:
+  shardingsphere:
+    props:     
+      sql:      #sql打印
+        show: true
+      #executor:     #工作线程数量，默认值: CPU核数
+      #  size: 4
+      
+    orchestration:   ###数据库治理功能  配置了zk但是看不到节点
+      name: spring_boot_ds_sharding     #治理实例名称
+      overwrite: true     #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
+      registry:
+        type: zookeeper   #配置中心类型。如：zookeeper
+        namespace: orchestration-spring-boot-sharding-test   #注册中心的命名空间
+        server-lists: localhost:2181    #连接注册中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
+        digest: admin     #连接注册中心的权限令牌。缺省为不需要权限验证
+        operation-timeout-milliseconds: 500     #操作超时的毫秒数，默认500毫秒
+        max-retries: 3    #连接失败后的最大重试次数，默认3次
+        retry-interval-milliseconds: 500      #重试间隔毫秒数，默认500毫秒
+        time-to-live-seconds: 60    #临时节点存活秒数，默认60秒
+        props:        #配置中心其它属性
+          author: huangjg
+          
+    datasource:            #数据源配置
+      names: db,db0,db1,db2   #数据库别名
+      db:                 #数据源具体配置
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/db?characterEncoding=utf-8
+        username: root
+        password: root
+      db0:                 #数据源具体配置
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/db0?characterEncoding=utf-8
+        username: root
+        password: root
+      db1:                 #数据源具体配置
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/db1?characterEncoding=utf-8
+        username: root
+        password: root
+      db2:                 #数据源具体配置
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/db2?characterEncoding=utf-8
+        username: root
+        password: root
+  
+    sharding:       ##分库分表规则
+      default-data-source-name: db   #未配置分片规则的表将通过默认数据源定位，而且不是广播表
+      broadcast-tables: t_need    #广播表配置，一个库一个表
+      default-database-strategy:    #默认的分库规则,如果逻辑表没单独配置则使用这个
+        inline:
+          sharding-column: user_id    #默认按照user_id分库，避免跨库查询
+          algorithm-expression: db$->{user_id % 3}
+      tables:       #具体策略                
+        tab_user: 
+          actual-data-nodes: db$->{0..2}.tab_user$->{0..1}  #具体的数据节点
+          database-strategy:   #分库规则 
+            inline:
+              sharding-column: age
+              algorithm-expression: db$->{age%3}
+          table-strategy:
+            inline:
+              sharding-column: id     #按照id取模结果确定
+              algorithm-expression: tab_user$->{id % 2}
+          key-generator:    #配置主键生成策略
+            column: id
+            type: SNOWFLAKE
+            props:
+              worker:
+                id: 20200413
+        user_code:
+          actual-data-nodes: db$->{0..2}.user_code$->{0..1}  #具体的数据节点   
+          database-strategy:   #分库规则 
+            inline:
+              sharding-column: code
+              algorithm-expression: db$->{Math.abs(code.hashCode() % 3)}         
+          table-strategy:
+            inline:
+              sharding-column: code
+              algorithm-expression: user_code$->{Math.abs(code.hashCode() % 2)}        
+          key-generator:
+            column: code
+            type: UUID      ###目前配置失败
+        t_order:
+          actual-data-nodes: db$->{0..2}.t_order$->{0..1}
+          table-strategy:
+            inline: 
+              sharding-column: order_id
+              algorithm-expression: t_order$->{order_id % 2}
+          key-generator:
+            column: order_id
+            type: SNOWFLAKE 
+        t_order_item:
+          actual-data-nodes: db$->{0..2}.t_order_item$->{0..1}
+          table-strategy:
+            inline:
+              sharding-column: order_id
+              algorithm-expression: t_order_item$->{order_id % 2}
+          key-generator:
+            column: order_item_id
+            type: SNOWFLAKE
+      binding-tables: t_order,t_order_item
+        
+                              
+              
+              
+              
+              
+                         
+   

@@ -1,0 +1,148 @@
+
+spring:
+  shardingsphere:
+    props:     
+      sql:      #sql打印
+        show: true
+      #executor:     #工作线程数量，默认值: CPU核数
+      #  size: 4
+
+  
+    orchestration:   ###数据库治理功能  配置了zk但是看不到节点
+      name: spring_boot_ds_sharding     #治理实例名称
+      overwrite: true     #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
+      registry:
+        type: zookeeper   #配置中心类型。如：zookeeper
+        namespace: orchestration-spring-boot-sharding-test   #注册中心的命名空间
+        server-lists: localhost:2181    #连接注册中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
+        digest: admin     #连接注册中心的权限令牌。缺省为不需要权限验证
+        operation-timeout-milliseconds: 500     #操作超时的毫秒数，默认500毫秒
+        max-retries: 3    #连接失败后的最大重试次数，默认3次
+        retry-interval-milliseconds: 500      #重试间隔毫秒数，默认500毫秒
+        time-to-live-seconds: 60    #临时节点存活秒数，默认60秒
+        props:        #配置中心其它属性
+          author: huangjg
+          blog-url: https://www.flyxiaopang.top/
+        
+          
+    datasource:            #数据源配置
+      names: db,db0,db1,db2   #数据库别名
+      db:                 #数据源具体配置,这个可作为默认库
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/data_source?characterEncoding=utf-8
+        username: root
+        password: root
+      db0:                 #数据源具体配置
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/data_source0?characterEncoding=utf-8
+        username: root
+        password: root
+      db1:                 #数据源具体配置
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/data_source1?characterEncoding=utf-8
+        username: root
+        password: root
+      db2:                 #数据源具体配置
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/data_source2?characterEncoding=utf-8
+        username: root
+        password: root
+  
+  
+    sharding:       ##分库分表规则
+      default-data-source-name: db      #默认数据源，放置不需要分片的表和广播表
+      broadcast-tables: factory,warehouse    #广播表，每个库都有独立的表
+      binding-tables: indent,indent_detail,task_upload,code_relate       ##绑定表配置
+      default-database-strategy:    #默认的分库规则,如果逻辑表没单独配置则使用这个
+        inline:
+          sharding-column: customer_id    #默认按照customer_id分库，避免跨库查询
+          algorithm-expression: db$->{customer_id % 3}
+      tables:       #逻辑表配置
+        config:               ###单库单表，使用UUID作为主键
+          actual-data-nodes: db.config
+          key-generator:
+            column: code
+            type: UUID
+        customer: 
+          actual-data-nodes: db$->{0..2}.customer$->{0..1}  #具体的数据节点
+          table-strategy:     ##分表策略
+            inline:
+              sharding-column: customer_name     #根据hash值取模确定落在哪张表
+              algorithm-expression: customer$->{Math.abs(customer_name.hashCode() % 2)}
+          key-generator:    #配置主键生成策略，默认使用SNOWFLAKE
+            column: customer_id
+            type: SNOWFLAKE
+            props:
+              worker:
+                id: 20200422
+        indent:
+          actual-data-nodes: db$->{0..2}.indent$->{0..1}
+          table-strategy:
+            inline: 
+              sharding-column: indent_id
+              algorithm-expression: indent$->{indent_id % 2}
+          key-generator:
+            column: indent_id
+            type: SNOWFLAKE 
+        indent_detail:
+          actual-data-nodes: db$->{0..2}.indent_detail$->{0..1}
+          table-strategy:
+            inline:
+              sharding-column: indent_id
+              algorithm-expression: indent_detail$->{indent_id % 2}
+          key-generator:
+            column: detail_id
+            type: SNOWFLAKE
+        task:
+          actual-data-nodes: db$->{0..2}.task$->{0..1}  #具体的数据节点   
+          database-strategy:   #分库规则 
+            inline:
+              sharding-column: task_id
+              algorithm-expression: db$->{task_id % 3}         
+          table-strategy:
+            inline:
+              sharding-column: task_id
+              algorithm-expression: task$->{task_id % 2}        
+        task_upload:
+          actual-data-nodes: db$->{0..2}.task_upload$->{0..1}  #具体的数据节点   
+          database-strategy:   #分库规则 
+            inline:
+              sharding-column: task_id
+              algorithm-expression: db$->{task_id % 3}         
+          table-strategy:
+            inline:
+              sharding-column: stack_code
+              algorithm-expression: task_upload$->{Math.abs(stack_code.hashCode() % 2)}        
+          key-generator:
+            column: upload_id
+            type: SNOWFLAKE      
+        code_relate:
+          actual-data-nodes: db$->{0..2}.code_relate$->{0..1}  #具体的数据节点   
+          database-strategy:   #分库规则 
+            inline:
+              sharding-column: task_id
+              algorithm-expression: db$->{task_id % 3}         
+          table-strategy:
+            inline:
+              sharding-column: stack_code
+              algorithm-expression: code_relate$->{Math.abs(stack_code.hashCode() % 2)}        
+          key-generator:
+            column: relate_id
+            type: SNOWFLAKE     
+      
+      
+        
+            
+        
+        
+                              
+              
+              
+              
+              
+                         
+   

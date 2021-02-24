@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.modular.order.mapper.IndentMapper">
+
+    <!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+     indent_id AS indentId,  
+     customer_id AS customerId,  
+     warehouse_id AS warehouseId,  
+     indent_name AS indentName,  
+     create_time AS createTime,  
+     update_time AS updateTime  
+	</sql>
+	
+	<select id="listByIndentId" resultType="java.util.Map">
+		SELECT
+			 t1.indent_id AS indentId,  
+		     t1.customer_id AS customerId,  
+		     t1.indent_name AS indentName,  
+		     t1.create_time AS createTime,  
+		     t1.update_time AS updateTime,
+		     t2.product_name AS productName,  
+     		 t2.num AS num,
+     		 t3.warehouse_name AS warehouseName 
+		FROM
+			indent t1
+		INNER JOIN indent_detail t2 ON t1.indent_id = t2.indent_id
+		INNER JOIN warehouse t3 ON t1.warehouse_id = t3.warehouse_id
+		where t1.indent_id = #{indentId}
+	</select>
+	
+	<select id="listByCustomerId" resultType="java.util.Map">
+		SELECT
+			 t1.indent_id AS indentId,  
+		     t1.customer_id AS customerId,  
+		     t1.indent_name AS indentName,  
+		     t1.create_time AS createTime,  
+		     t1.update_time AS updateTime,
+		     t2.product_name AS productName,  
+     		 t2.num AS num,
+     		 t3.warehouse_name AS warehouseName 
+		FROM
+			indent t1
+		INNER JOIN indent_detail t2 ON t1.indent_id = t2.indent_id
+		INNER JOIN warehouse t3 ON t1.warehouse_id = t3.warehouse_id
+		where t1.customer_id = #{customerId}
+	</select>
+	
+	<select id="listByName" resultType="java.util.Map">
+		SELECT
+		 t1.customer_id AS customerId, 
+		 t1.customer_name AS customerName,
+		 t2.indent_id AS indentId,  
+	     t2.indent_name AS indentName,  
+	     t2.create_time AS createTime,  
+	     t2.update_time AS updateTime,
+	     t3.product_name AS productName,  
+   		 t3.num AS num
+		FROM
+			customer t1
+			INNER JOIN indent t2 ON t1.customer_id = t2.customer_id
+			INNER JOIN indent_detail t3 ON t2.indent_id = t3.indent_id 
+		WHERE
+			t1.customer_name = #{customerName}	
+	</select>
+	
+	
+	
+</mapper>
+
+

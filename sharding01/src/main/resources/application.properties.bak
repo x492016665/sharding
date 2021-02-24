@@ -1,0 +1,36 @@
+spring.shardingsphere.datasource.names=ds,ds0,ds1
+
+spring.shardingsphere.datasource.ds.url=jdbc:mysql://localhost:3306/ds?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false
+spring.shardingsphere.datasource.ds.type=com.alibaba.druid.pool.DruidDataSource
+spring.shardingsphere.datasource.ds.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds.username=root
+spring.shardingsphere.datasource.ds.password=root
+
+spring.shardingsphere.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false
+spring.shardingsphere.datasource.ds0.type=com.alibaba.druid.pool.DruidDataSource
+spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds0.username=root
+spring.shardingsphere.datasource.ds0.password=root
+
+spring.shardingsphere.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&useSSL=false
+spring.shardingsphere.datasource.ds1.type=com.alibaba.druid.pool.DruidDataSource
+spring.shardingsphere.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds1.username=root
+spring.shardingsphere.datasource.ds1.password=root
+
+# \u914D\u7F6E t_order \u8868\u89C4\u5219
+spring.shardingsphere.rules.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order_$->{0..1}
+# \u914D\u7F6E\u5206\u5E93\u7B56\u7565
+spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-column=user_id
+spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-algorithm-name=database_inline
+# \u914D\u7F6E\u5206\u8868\u7B56\u7565
+spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-column=order_id
+spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm-name=table_inline
+
+# \u914D\u7F6E \u5206\u7247\u7B97\u6CD5
+spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.type=INLINE
+spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.props.algorithm-expression=ds$->{user_id % 2}
+spring.shardingsphere.rules.sharding.sharding-algorithms.table_inline.type=INLINE
+spring.shardingsphere.rules.sharding.sharding-algorithms.table_inline.props.algorithm-expression=t_order_$->{order_id % 2}
+
+#debug=true

@@ -1,0 +1,30 @@
+
+spring:
+  application:
+    name: sharding-jdbc-db-table
+  profiles:
+    active: dev
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+      exclude: static/**,public/**
+
+server:
+  port: 1000
+
+
+    
+mybatis-plus:
+  mapper-locations: classpath:com/project/modular/*/mapper/mapping/*.xml
+  typeAliasesPackage: com.project.modular.*.model
+  configuration: 
+    call-setters-on-nulls: true
+    cache-enabled: true
+    map-underscore-to-camel-case: true
+ 
+    
+###生成日志文件路径    
+log:
+  path: logs
+  

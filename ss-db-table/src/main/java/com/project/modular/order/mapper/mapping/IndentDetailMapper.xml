@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.modular.order.mapper.IndentDetailMapper">
+
+    <!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+     detail_id AS detailId,  
+     indent_id AS indentId,  
+     customer_id AS customerId,  
+     product_name AS productName,  
+     num AS num,  
+     create_time AS createTime,  
+     update_time AS updateTime  
+	</sql>
+</mapper>
+
+

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.0.6.RELEASE</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.sharding-jdbc.db-table</groupId>
+	<artifactId>sharding-jdbc-db-table</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<name>sharding-jdbc-db-table</name>
+	<description>shardingsphere之sharding-jdbc分库分表示例代码</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<mybatis-plus-generator.version>3.1.0</mybatis-plus-generator.version>
+        <mybatis-plus-extension.version>3.1.0</mybatis-plus-extension.version>
+        <mybatis-plus-boot-starter.version>3.1.0</mybatis-plus-boot-starter.version>
+        <mybatis-ehcache.version>1.0.0</mybatis-ehcache.version>
+        <org.apache.velocity.version>2.1</org.apache.velocity.version>
+        <druid-spring-boot-starter.version>1.1.21</druid-spring-boot-starter.version>
+        <hutool-core.version>4.6.4</hutool-core.version>
+        <sharding-jdbc-spring-boot-starter.version>4.0.0-RC1</sharding-jdbc-spring-boot-starter.version>
+		<sharding-transaction-xa-core.version>4.0.1</sharding-transaction-xa-core.version>
+		<sharding-jdbc-orchestration-spring-boot-starter.version>4.0.0-RC1</sharding-jdbc-orchestration-spring-boot-starter.version>
+		<sharding-orchestration-reg-zookeeper-curator.version>4.0.0-RC1</sharding-orchestration-reg-zookeeper-curator.version>
+	</properties>
+
+	<dependencies>
+		<!-- springboot基本依赖 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!--mybatis-plus依赖 -->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-generator</artifactId>
+			<version>${mybatis-plus-generator.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-boot-starter</artifactId>
+			<version>${mybatis-plus-boot-starter.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-extension</artifactId>
+			<version>${mybatis-plus-extension.version}</version>
+		</dependency>
+
+		<!-- 集成echcache -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-ehcache</artifactId>
+			<version>${mybatis-ehcache.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+		</dependency>
+		
+		<!-- 代码生成器模板 -->
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity-engine-core</artifactId>
+			<version>${org.apache.velocity.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- 熱部署 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional> <!-- 这个需要为 true 热部署才有效 -->
+		</dependency>
+
+		 <!-- druid数据库连接池 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>${druid-spring-boot-starter.version}</version>
+        </dependency>
+        
+        
+        <!-- mysql驱动 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+
+		<!-- bean工具 -->
+		<dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-core</artifactId>
+			<version>${hutool-core.version}</version>
+		</dependency>
+
+		<!-- 使用@ConfigurationProperties注解 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+		
+		<!--shardingsphere依赖-->
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+            <version>${sharding-jdbc-spring-boot-starter.version}</version>
+        </dependency>
+        <!-- 使用XA事务时，需要引入此依赖， 4.1.x发布 -->
+		<!-- <dependency>
+		    <groupId>org.apache.shardingsphere</groupId>
+		    <artifactId>sharding-transaction-xa-core</artifactId>
+		    <version>${sharding-transaction-xa-core.version}</version>
+		</dependency> -->
+		<!-- 使用编排治理 -->
+		<dependency>
+		    <groupId>org.apache.shardingsphere</groupId>
+		    <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+		    <version>${sharding-jdbc-orchestration-spring-boot-starter.version}</version>
+		</dependency>
+		<!-- 引入zookeeper注册中心依赖 -->
+		<dependency>
+		    <groupId>org.apache.shardingsphere</groupId>
+		    <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+		    <version>${sharding-orchestration-reg-zookeeper-curator.version}</version>
+		</dependency>
+		
+		
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
